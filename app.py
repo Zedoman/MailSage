@@ -31,7 +31,7 @@ def read_data(file):
 def send_email(subject, body, to_email, company_name, smtp_server, smtp_port, smtp_user, smtp_password):
     try:
         # Email body generation with dynamic greeting
-        body = f"Dear {company_name},\n\n" + body
+        # body = f"Dear {company_name},\n\n" + body
         
         # Set up SMTP server and send email
         server = smtplib.SMTP(smtp_server, smtp_port)
@@ -44,13 +44,26 @@ def send_email(subject, body, to_email, company_name, smtp_server, smtp_port, sm
         # Set delivery status to "Delivered" after the email is successfully sent
         delivery_status = "Delivered"
         opened = "Pending"  # This can be updated when a tracking mechanism is used
+        
 
         # Update the email status in MongoDB to "Sent" and delivery status to "Delivered"
         store_email_status(to_email, "Sent", company_name=company_name, details=body, delivery_status=delivery_status, opened=opened)
         return "Sent"
+    
     except Exception as e:
-        store_email_status(to_email, f"Failed: {str(e)}", company_name=company_name, details=body)
-        return f"Failed: {str(e)}"
+        # Extract the main error message by splitting on ' ' and taking the core error
+        error_message = str(e)
+        
+        # Check if it’s an SMTP error with a structured message and extract the error code and message
+        if 'Username and Password not accepted' in error_message:
+            error_message = "Failed: 5.7.8 Username and Password not accepted"
+        else:
+            # Otherwise, take the first portion of the message before any extra details
+            error_message = error_message.split("\n")[0]  # Take only the first line of the error message
+
+        store_email_status(to_email, error_message, company_name=company_name, details=body)
+        return error_message
+
 
 
 # Function to store email status
@@ -90,32 +103,25 @@ def store_email_status(email, status, details=None, company_name=None, delivery_
 # Groq content generation function
 # Function to clean up unwanted static text and generate the email content
 def generate_email_content(prompt, data_row):
-    # Update the prompt to focus purely on generating the email
-    prompt = f"Create a polished and professional sales email for the company '{data_row['CompanyName']}', located in {data_row['Location']}, offering the following products: {data_row['Products']}. The email should be concise, polite, and engaging. The contact email is {data_row['Email']}. Do not include any analysis or breakdown of the letter. Just the email content."
+    # Replace placeholders in prompt with actual values from the data row
+    for column in data_row.index:
+        prompt = prompt.replace(f'{{{column}}}', str(data_row[column]))
 
-    # Clean up any extra static text
-    unwanted_phrases = [
-        "Here is a revised version of the email that is more polished and professional:",
-        "Here is a polished and professional version of the email:",
-        "Here is a rewritten version of the email:"
-    ]
-    
-    for phrase in unwanted_phrases:
-        prompt = prompt.replace(phrase, "").strip()  # Remove unwanted phrases
-
-    # Generate the email content using the model
+    # Use Groq API to generate content
     chat_completion = groq_client.chat.completions.create(
-        messages=[{"role": "user", "content": prompt}],
-        model="llama3-8b-8192",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        model="llama3-8b-8192",  # Choose appropriate model for your use case
         stream=False,
     )
-    generated_text = chat_completion.choices[0].message.content.strip()
-
-    # Ensure the generated content starts with "Dear {CompanyName},"
-    # company_name = data_row.get("CompanyName", "Unknown")
-    # body = f"Dear {company_name},\n\n{generated_text}"
-
-    return generated_text
+    
+    # Extract generated content
+    generated_text = chat_completion.choices[0].message.content
+    return generated_text.strip()
 
 # Function to store email status
 def store_email_status(email, status, details=None, company_name=None, delivery_status="N/A", opened="N/A"):
