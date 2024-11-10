@@ -1,0 +1,7 @@
+pandas
+pymongo
+apscheduler
+gradio
+groq
+matplotlib
+Pillow
