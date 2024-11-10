@@ -95,7 +95,7 @@ Upload CSV: Upload a CSV file with recipient email addresses and relevant detail
 Create Prompt: Enter a custom prompt for email content, using placeholders for dynamic fields (e.g., {CompanyName}). <br>
 **Example:**
 
-Hello **{CompanyName}** from **{Location}**,
+Dear **{CompanyName}** from **{Location}**,
 
 We are excited to offer the following products: **{Products}**. Please let us know if you are interested in any of them.
 
