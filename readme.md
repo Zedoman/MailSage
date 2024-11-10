@@ -87,10 +87,11 @@ Pending<br>
 
 ### Example Workflow
 Upload CSV: Upload a CSV file with recipient email addresses and relevant details (e.g., Company Name, etc.). <br>
-    ```bash
-    CompanyName,Location,Email,Products
-    ABC Corp,New York,hbjarko@gmail.com,"Product A, Product B"
-    XYZ Ltd,Los Angeles,12346arjo@gmail.com,"Product C, Product D"
+| CompanyName | Location      | Email             | Products               |
+|-------------|---------------|-------------------|-------------------------|
+| ABC Corp    | New York      | hbjarko@gmail.com | Product A, Product B   |
+| XYZ Ltd     | Los Angeles   | 12346arjo@gmail.com | Product C, Product D |
+
 Create Prompt: Enter a custom prompt for email content, using placeholders for dynamic fields (e.g., {CompanyName}). <br>
     {Example: Hello {CompanyName} from {Location}, <br>
 
