@@ -93,13 +93,15 @@ Upload CSV: Upload a CSV file with recipient email addresses and relevant detail
 | XYZ Ltd     | Los Angeles   | 12346arjo@gmail.com | Product C, Product D |
 
 Create Prompt: Enter a custom prompt for email content, using placeholders for dynamic fields (e.g., {CompanyName}). <br>
-    {Example: Hello {CompanyName} from {Location}, <br>
+**Example:**
 
-    We are excited to offer the following products: {Products}. Please let us know if you are interested in any of them.
- 
-    Best regards,
-    Your Company
-    }
+Hello **{CompanyName}** from **{Location}**,
+
+We are excited to offer the following products: **{Products}**. Please let us know if you are interested in any of them.
+
+Best regards,  
+Your Company
+
 Send Emails: Choose to send emails immediately or schedule them for a later time. <br>
 Monitor Status: Check the real-time status of each email and view the analytics dashboard. <br>
 Track Analytics: View the status of sent emails and visualize it in the Analytics Graph. <br>
